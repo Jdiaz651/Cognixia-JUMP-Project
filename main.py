@@ -1,9 +1,12 @@
+from classes.Account import Account
 def main():
     print("Welcome to the bank")
-    Username = input("Please enter your username:")
-    Password = input("Please enter you password:")
+    username = input("Please enter your username:")
+    password = input("Please enter you password:")
 
-    print("Your username and password is:", Username, Password)
+    current_account = Account(username, password)
+
+    print(current_account)
 
 if __name__ == "__main__":
     main()

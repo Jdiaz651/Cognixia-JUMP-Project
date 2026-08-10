@@ -1,5 +1,5 @@
-from classes.Account import Account, SavingsAccount, CheckingAccount
-from classes.Bank import Bank
+from models.Account import Account, SavingsAccount, CheckingAccount
+from models.Bank import Bank
 from fake_data import load_fake_data
 from datetime import datetime
 

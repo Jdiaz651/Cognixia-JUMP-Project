@@ -1,6 +1,6 @@
-from classes.Branch import Branch
-from classes.Customer import Customer
-from classes.Account import SavingsAccount, CheckingAccount
+from models.Branch import Branch
+from models.Customer import Customer
+from models.Account import SavingsAccount, CheckingAccount
 
 def load_fake_data():
     """Builds sample branches, customers, and accounts (with transaction history) for testing."""

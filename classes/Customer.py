@@ -1,12 +1,12 @@
 from classes.Account import Account
-class Customer():
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-        self. accounts = []
-        # default accounts every customer gets. mainly to test multiple accounts
-        self.accounts.append(Account("test1","checking", 10.0))
-        self.accounts.append(Account("test2","savings", 20.0))
+from classes.Address import Address
+class Customer:
+    def __init__(self, customer_id, name, email, branch_id):
+        self.id = customer_id
+        self.name = name
+        self.email = email
+        self.branch_id = branch_id
+        self.accounts = []  # list of Account objects
 
     def add_account(self, account):
         self.accounts.append(account)
@@ -15,6 +15,8 @@ class Customer():
         for i, acct in enumerate(self.accounts, start=1):
             print(f"{i}. {acct}")
 
+
     def __str__(self):
-        return(self.username, self.password)
+        return f"Customer #{self.id}: {self.name} ({self.email}), branch: {self.branch_id}"
+
     

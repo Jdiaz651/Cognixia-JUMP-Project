@@ -27,7 +27,7 @@ def transfer(bank, from_account_number, to_account_number, amount):
     return txn
 
 
-def list_all(bank):
+def list_all(bank, start_date=None, end_date=None, type=None):
     seen_ids = set()
     unique_txns = []
     for customer in bank.customers:
@@ -36,4 +36,12 @@ def list_all(bank):
                 if txn.id not in seen_ids:
                     seen_ids.add(txn.id)
                     unique_txns.append(txn)
+
+    if start_date is not None:
+        unique_txns = [t for t in unique_txns if t.timestamp.date() >= start_date]
+    if end_date is not None:
+        unique_txns = [t for t in unique_txns if t.timestamp.date() <= end_date]
+    if type is not None:
+        unique_txns = [t for t in unique_txns if t.type.lower() == type.lower()]
+
     return sorted(unique_txns, key=lambda t: t.timestamp)

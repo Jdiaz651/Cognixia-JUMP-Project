@@ -1,0 +1,39 @@
+# services/transaction_service.py
+from app.models.Transaction import Transaction
+from app.services.account_service import AccountNotFound
+
+
+def transfer(bank, from_account_number, to_account_number, amount):
+    from_acct = bank.find_account(from_account_number)
+    to_acct = bank.find_account(to_account_number)
+
+    if from_acct is None:
+        raise AccountNotFound(from_account_number)
+    if to_acct is None:
+        raise AccountNotFound(to_account_number)
+
+    # reuse withdraw()'s validation (overdraft/minimum-balance rules),
+    # but we don't want its auto-logged "Withdrawal" record —
+    # we want one shared "Transfer" record instead
+    from_acct.withdraw(amount)
+    from_acct.transactions.pop()  # remove the "Withdrawal" record withdraw() just added
+
+    to_acct.balance += amount  # move the money directly, skip deposit()'s own logging
+
+    txn = Transaction(from_account_number, to_account_number, amount, "Transfer")
+    from_acct.transactions.append(txn)
+    to_acct.transactions.append(txn)
+
+    return txn
+
+
+def list_all(bank):
+    seen_ids = set()
+    unique_txns = []
+    for customer in bank.customers:
+        for account in customer.accounts:
+            for txn in account.transactions:
+                if txn.id not in seen_ids:
+                    seen_ids.add(txn.id)
+                    unique_txns.append(txn)
+    return sorted(unique_txns, key=lambda t: t.timestamp)

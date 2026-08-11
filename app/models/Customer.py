@@ -1,6 +1,7 @@
 from app.models.Account import Account
 class Customer:
     def __init__(self, customer_id, name, email, branch_id):
+        self.is_active = True
         self.id = customer_id
         self.name = name
         self.email = email

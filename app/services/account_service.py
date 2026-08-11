@@ -30,8 +30,16 @@ def get(bank, account_number):
     return account
 
 
-def list_all(bank):
+def list_all(bank, branch_id=None, min_balance=None):
     accounts = []
     for customer in bank.customers:
         accounts.extend(customer.accounts)
+
+    if branch_id is not None:
+        accounts = [a for a in accounts
+                    if bank.find_customer(a.owner_id).branch_id == branch_id]
+
+    if min_balance is not None:
+        accounts = [a for a in accounts if a.balance >= min_balance]
+
     return accounts

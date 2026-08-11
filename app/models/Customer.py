@@ -1,4 +1,4 @@
-from models.Account import Account
+from app.models.Account import Account
 class Customer:
     def __init__(self, customer_id, name, email, branch_id):
         self.id = customer_id

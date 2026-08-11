@@ -1,5 +1,5 @@
 import itertools
-from models.Transaction import Transaction
+from app.models.Transaction import Transaction
 
 class Account:
     _account_number_counter = itertools.count(10000000)

@@ -1,4 +1,3 @@
-# services/transaction_service.py
 from app.models.Transaction import Transaction
 from app.services.account_service import AccountNotFound
 
@@ -12,13 +11,10 @@ def transfer(bank, from_account_number, to_account_number, amount):
     if to_acct is None:
         raise AccountNotFound(to_account_number)
 
-    # reuse withdraw()'s validation (overdraft/minimum-balance rules),
-    # but we don't want its auto-logged "Withdrawal" record —
-    # we want one shared "Transfer" record instead
     from_acct.withdraw(amount)
-    from_acct.transactions.pop()  # remove the "Withdrawal" record withdraw() just added
+    from_acct.transactions.pop()  # discard the auto-logged "Withdrawal"
 
-    to_acct.balance += amount  # move the money directly, skip deposit()'s own logging
+    to_acct.balance += amount
 
     txn = Transaction(from_account_number, to_account_number, amount, "Transfer")
     from_acct.transactions.append(txn)

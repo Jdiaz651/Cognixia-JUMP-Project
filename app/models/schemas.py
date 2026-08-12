@@ -1,12 +1,14 @@
-# models/schemas.py
-from pydantic import BaseModel, EmailStr, ConfigDict
-from typing import Optional
-from typing import Literal
+
+from pydantic import BaseModel, ConfigDict
+from typing import Optional, Literal
+
+
+# ---------- Customers ----------
 
 class CustomerCreate(BaseModel):
     name: str
-    email: EmailStr
-    branch_id: str
+    email: str
+    branch_id: int
 
 
 class CustomerUpdate(BaseModel):
@@ -15,16 +17,14 @@ class CustomerUpdate(BaseModel):
 
 
 class CustomerOut(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
+    id: str  # MongoDB IDs are 24-char strings, not integers!
     name: str
     email: str
-    branch_id: str
+    branch_id: int
     is_active: bool
 
 
-
+# ---------- Accounts ----------
 
 class AccountCreate(BaseModel):
     owner_id: int
@@ -39,6 +39,8 @@ class AccountOut(BaseModel):
     owner_id: int
     balance: float
 
+
+# ---------- Transactions ----------
 
 class TransferRequest(BaseModel):
     from_account: int

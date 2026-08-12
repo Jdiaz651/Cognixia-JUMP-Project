@@ -1,7 +1,7 @@
 
 from bson import ObjectId
 from bson.errors import InvalidId
-from app.db import users  # Import the users collection handle from db.py
+from backend.db import users  # Import the users collection handle from db.py
 from pymongo import ReturnDocument
 
 class CustomerNotFound(Exception):

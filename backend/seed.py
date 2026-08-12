@@ -1,6 +1,6 @@
 # app/seed.py
 from datetime import datetime, timezone
-from app.db import db
+from backend.db import db
 
 branches = db["branches"]
 

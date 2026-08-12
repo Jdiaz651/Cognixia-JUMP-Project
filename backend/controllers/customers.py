@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from app.models.schemas import CustomerCreate, CustomerUpdate, CustomerOut
-from app.services import customer_service as svc
-from app.services.customer_service import CustomerNotFound
+from backend.models.schemas import CustomerCreate, CustomerUpdate, CustomerOut
+from backend.services import customer_service as svc
+from backend.services.customer_service import CustomerNotFound
 
 router = APIRouter(prefix="/api/v1/customers", tags=["customers"])
 

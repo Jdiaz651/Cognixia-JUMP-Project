@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from app.controllers import customers, accounts, transactions
-from app.store import bank
+from backend.controllers import customers, accounts, transactions
+from backend.store import bank
 
 
 app = FastAPI(title="Bank API")

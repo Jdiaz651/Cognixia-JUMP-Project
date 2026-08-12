@@ -1,10 +1,10 @@
 from datetime import date
 from typing import Optional
 from fastapi import APIRouter, HTTPException
-from app.models.schemas import TransferRequest, TransactionOut
-from app.services import transaction_service as svc
-from app.services.account_service import AccountNotFound
-from app.store import bank
+from backend.models.schemas import TransferRequest, TransactionOut
+from backend.services import transaction_service as svc
+from backend.services.account_service import AccountNotFound
+from backend.store import bank
 
 router = APIRouter(prefix="/api/v1/transactions", tags=["transactions"])
 

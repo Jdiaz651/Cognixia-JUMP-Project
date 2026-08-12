@@ -1,9 +1,9 @@
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
-from app.models.schemas import AccountCreate, AccountOut
-from app.services import account_service as svc
-from app.services.customer_service import CustomerNotFound
-from app.store import bank
+from backend.models.schemas import AccountCreate, AccountOut
+from backend.services import account_service as svc
+from backend.services.customer_service import CustomerNotFound
+from backend.store import bank
 
 router = APIRouter(prefix="/api/v1/accounts", tags=["accounts"])
 

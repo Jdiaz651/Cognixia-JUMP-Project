@@ -1,5 +1,5 @@
 import itertools
-from app.models.Transaction import Transaction
+from backend.models.Transaction import Transaction
 
 
 class Account:

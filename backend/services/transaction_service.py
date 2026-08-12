@@ -1,5 +1,5 @@
-from app.models.Transaction import Transaction
-from app.services.account_service import AccountNotFound
+from backend.models.Transaction import Transaction
+from backend.services.account_service import AccountNotFound
 
 
 def transfer(bank, from_account_number, to_account_number, amount):

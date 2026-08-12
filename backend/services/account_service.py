@@ -1,6 +1,6 @@
 
-from app.models.Account import SavingsAccount, CheckingAccount
-from app.services.customer_service import CustomerNotFound
+from backend.models.Account import SavingsAccount, CheckingAccount
+from backend.services.customer_service import CustomerNotFound
 
 
 class AccountNotFound(Exception):

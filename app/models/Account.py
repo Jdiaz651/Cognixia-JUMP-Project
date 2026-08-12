@@ -1,6 +1,7 @@
 import itertools
 from app.models.Transaction import Transaction
 
+
 class Account:
     _account_number_counter = itertools.count(10000000)
 
@@ -14,7 +15,9 @@ class Account:
         if amount <= 0:
             raise ValueError("Deposit amount must be positive")
         self.balance += amount
-        self.transactions.append(Transaction(None, self.account_number, amount, "Deposit"))
+        self.transactions.append(
+            Transaction(None, self.account_number, amount, "Deposit")
+        )
 
     def withdraw(self, amount):
         if amount <= 0:
@@ -22,7 +25,9 @@ class Account:
         if amount > self.balance:
             raise ValueError("Insufficient funds")
         self.balance -= amount
-        self.transactions.append(Transaction(self.account_number, None, amount, "Withdrawal"))
+        self.transactions.append(
+            Transaction(self.account_number, None, amount, "Withdrawal")
+        )
 
     def get_balance(self):
         return self.balance
@@ -47,9 +52,13 @@ class SavingsAccount(Account):
         if amount <= 0:
             raise ValueError("Withdrawal amount must be positive")
         if self.balance - amount < self.minimum_balance:
-            raise ValueError(f"Withdrawal would go below minimum balance of ${self.minimum_balance:.2f}")
+            raise ValueError(
+                f"Withdrawal would go below minimum balance of ${self.minimum_balance:.2f}"
+            )
         self.balance -= amount
-        self.transactions.append(Transaction(self.account_number, None, amount, "Withdrawal"))
+        self.transactions.append(
+            Transaction(self.account_number, None, amount, "Withdrawal")
+        )
 
 
 class CheckingAccount(Account):
@@ -61,6 +70,10 @@ class CheckingAccount(Account):
         if amount <= 0:
             raise ValueError("Withdrawal amount must be positive")
         if self.balance - amount < -self.overdraft_limit:
-            raise ValueError(f"Withdrawal exceeds overdraft limit of ${self.overdraft_limit:.2f}")
+            raise ValueError(
+                f"Withdrawal exceeds overdraft limit of ${self.overdraft_limit:.2f}"
+            )
         self.balance -= amount
-        self.transactions.append(Transaction(self.account_number, None, amount, "Withdrawal"))
+        self.transactions.append(
+            Transaction(self.account_number, None, amount, "Withdrawal")
+        )

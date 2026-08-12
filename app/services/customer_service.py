@@ -57,16 +57,26 @@ def update(customer_id: str, name: str | None = None, email: str | None = None) 
     except InvalidId:
         raise CustomerNotFound()
 
-    # find_one_and_update updates the document and returns the updated version
+    update_fields = {}
+    if name is not None:
+        update_fields["name"] = name
+    if email is not None:
+        update_fields["email"] = email
+
+    if not update_fields:
+        # nothing to update — just return the current document
+        doc = users.find_one({"_id": obj_id, "is_active": True})
+        if not doc:
+            raise CustomerNotFound()
+        return _format_customer(doc)
+
     updated_doc = users.find_one_and_update(
         {"_id": obj_id, "is_active": True},
-        {"$set": {"name": name, "email": email}},
+        {"$set": update_fields},
         return_document=ReturnDocument.AFTER,
     )
-
     if not updated_doc:
         raise CustomerNotFound()
-
     return _format_customer(updated_doc)
 
 

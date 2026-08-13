@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from backend.models.schemas import CustomerCreate, CustomerUpdate, CustomerOut
 from backend.services import customer_service as svc
 from backend.services.customer_service import CustomerNotFound
+from backend.models.schemas import CustomerLogin 
 
 router = APIRouter(prefix="/api/v1/customers", tags=["customers"])
 
@@ -38,3 +39,12 @@ def deactivate_customer(customer_id: str):
         return svc.delete(customer_id)
     except CustomerNotFound:
         raise HTTPException(status_code=404, detail="Customer not found")
+
+    from backend.models.schemas import CustomerLogin  # Import your schema
+
+@router.post("/login", response_model=CustomerOut)
+def login_customer(payload: CustomerLogin):
+    try:
+        return svc.login(name=payload.name, email=payload.email)
+    except CustomerNotFound:
+        raise HTTPException(status_code=401, detail="Invalid name or email combination")

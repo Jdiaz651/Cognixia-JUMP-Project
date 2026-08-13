@@ -23,6 +23,9 @@ class CustomerOut(BaseModel):
     branch_id: int
     is_active: bool
 
+class CustomerLogin(BaseModel):
+    name: str
+    email: str
 
 # ---------- Accounts ----------
 

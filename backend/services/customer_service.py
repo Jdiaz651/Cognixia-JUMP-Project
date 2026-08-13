@@ -8,6 +8,15 @@ class CustomerNotFound(Exception):
     """Custom exception raised when a requested customer is not found in MongoDB."""
     pass
 
+def login(name: str, email: str) -> dict:
+    # Query MongoDB for an active user matching BOTH name and email
+    doc = users.find_one({"name": name, "email": email, "is_active": True})
+    
+    if not doc:
+        raise CustomerNotFound()
+        
+    return _format_customer(doc)
+
 
 def _format_customer(doc: dict) -> dict:
     """Helper function to convert MongoDB's internal `_id` (ObjectId) 

@@ -1,54 +1,61 @@
-import { useEffect, useState } from 'react'
-import './App.css'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { LoginPage } from './pages/Login';
+import { RegisterPage } from './pages/Register';
+import { Dashboard } from './pages/Dashboard';
+import { LandingPage } from './pages/LandingPage';
+import { AdminDashboard } from './pages/AdminDashboard';
+import './App.css';
 
-interface Customer {
-  id: string
-  name: string
-  email: string
-  branch_id: number
-  is_active: boolean
-}
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
 
-export default function App() {
-  const [customers, setCustomers] = useState<Customer[]>([])
+  if (loading) return <div className="loading">Loading...</div>;
+  if (!user) return <Navigate to="/login" />;
 
-  useEffect(() => {
-    fetch('/api/v1/customers')
-      .then((res) => res.json())
-      .then((data: Customer[]) => setCustomers(data))
-      .catch((err) => console.error('Error fetching customers:', err))
-  }, [])
+  return <>{children}</>;
+};
 
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) return <div className="loading">Loading...</div>;
+  if (!user) return <Navigate to="/login" />;
+  if (user.is_admin !== true) return <Navigate to="/dashboard" />;
+
+  return <>{children}</>;
+};
+
+function App() {
   return (
-    <div className="container">
-      <header className="header">
-        <h1>Bank Customers</h1>
-        <p>Active account directory connected to FastAPI & MongoDB</p>
-      </header>
-
-      <main className="card-grid">
-        {customers.map((c) => (
-          <div key={c.id} className="card">
-            <div className="card-header">
-              <h2 className="card-title">{c.name}</h2>
-              <span className={`badge ${c.is_active ? 'active' : 'inactive'}`}>
-                {c.is_active ? 'Active' : 'Inactive'}
-              </span>
-            </div>
-
-            <div className="card-details">
-              <p>
-                <span>Email:</span>
-                <strong>{c.email}</strong>
-              </p>
-              <p>
-                <span>Branch:</span>
-                <strong>#{c.branch_id}</strong>
-              </p>
-            </div>
-          </div>
-        ))}
-      </main>
-    </div>
-  )
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
 }
+
+export default App;

@@ -3,3 +3,7 @@ uvicorn[standard]
 email-validator
 pymongo
 python-dotenv
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+bcrypt==4.0.1

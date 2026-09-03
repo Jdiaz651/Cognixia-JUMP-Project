@@ -1,43 +1,52 @@
-from backend.models.Transaction import Transaction
-from backend.services.account_service import AccountNotFound
+from datetime import datetime
+from typing import Optional
+from bson import ObjectId
+from bson.errors import InvalidId
+from backend.db import client, accounts, transactions
+from backend.services.account_service import AccountNotFound, withdraw, deposit
 
+def transfer(from_account_number: int, to_account_number: int, amount: float) -> dict:
+    # Use a session to ensure atomicity of the transfer
+    with client.start_session() as session:
+        with session.start_transaction():
+            # 1. Withdraw from source
+            withdraw(from_account_number, amount, session=session)
+            
+            # 2. Deposit to destination
+            deposit(to_account_number, amount, session=session)
 
-def transfer(bank, from_account_number, to_account_number, amount):
-    from_acct = bank.find_account(from_account_number)
-    to_acct = bank.find_account(to_account_number)
+            # 3. Record the transaction
+            txn_doc = {
+                "from_account": from_account_number,
+                "to_account": to_account_number,
+                "amount": amount,
+                "type": "transfer",
+                "timestamp": datetime.now()
+            }
+            
+            result = transactions.insert_one(txn_doc, session=session)
+            txn_doc["_id"] = result.inserted_id
+            return txn_doc
 
-    if from_acct is None:
-        raise AccountNotFound(from_account_number)
-    if to_acct is None:
-        raise AccountNotFound(to_account_number)
+def list_all(start_date=None, end_date=None, type: str = None) -> list[dict]:
+    query = {}
+    
+    if type:
+        query["type"] = type.lower()
+    
+    if start_date or end_date:
+        date_query = {}
+        if start_date:
+            date_query["$gte"] = datetime.combine(start_date, datetime.min.time())
+        if end_date:
+            date_query["$lte"] = datetime.combine(end_date, datetime.max.time())
+        query["timestamp"] = date_query
 
-    from_acct.withdraw(amount)
-    from_acct.transactions.pop()  # discard the auto-logged "Withdrawal"
-
-    to_acct.balance += amount
-
-    txn = Transaction(from_account_number, to_account_number, amount, "Transfer")
-    from_acct.transactions.append(txn)
-    to_acct.transactions.append(txn)
-
-    return txn
-
-
-def list_all(bank, start_date=None, end_date=None, type=None):
-    seen_ids = set()
-    unique_txns = []
-    for customer in bank.customers:
-        for account in customer.accounts:
-            for txn in account.transactions:
-                if txn.id not in seen_ids:
-                    seen_ids.add(txn.id)
-                    unique_txns.append(txn)
-
-    if start_date is not None:
-        unique_txns = [t for t in unique_txns if t.timestamp.date() >= start_date]
-    if end_date is not None:
-        unique_txns = [t for t in unique_txns if t.timestamp.date() <= end_date]
-    if type is not None:
-        unique_txns = [t for t in unique_txns if t.type.lower() == type.lower()]
-
-    return sorted(unique_txns, key=lambda t: t.timestamp)
+    cursor = transactions.find(query).sort("timestamp", 1)
+    
+    results = []
+    for doc in cursor:
+        doc["id"] = str(doc["_id"])
+        results.append(doc)
+        
+    return results

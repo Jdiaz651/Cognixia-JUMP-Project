@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 .env
 venv/
+package-lock.json
+frontend/package-lock.json
+frontend/package-lock.json

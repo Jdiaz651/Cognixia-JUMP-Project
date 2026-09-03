@@ -5,3 +5,4 @@ venv/
 package-lock.json
 frontend/package-lock.json
 frontend/package-lock.json
+backend/.env.local

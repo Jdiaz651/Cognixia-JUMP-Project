@@ -23,14 +23,16 @@ def create_access_token(data: dict):
     return encoded_jwt
 
 
+
+
 @router.post("", response_model=CustomerOut)
 def register_customer(payload: CustomerCreate):
     try:
         return svc.create(
-            payload.name, 
-            payload.email, 
-            payload.password, 
-            payload.branch_id, 
+            payload.name,
+            payload.email,
+            payload.password,
+            payload.branch_id,
             is_admin=payload.is_admin
         )
     except ValueError as e:

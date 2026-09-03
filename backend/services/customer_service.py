@@ -19,7 +19,7 @@ class AuthenticationError(Exception):
 
 
 def _format_customer(doc: dict) -> dict:
-    """Helper function to convert MongoDB's internal `_id` (ObjectId) 
+    """Helper function to convert MongoDB's internal `_id` (ObjectId)
     into a string `id` so Pydantic and JSON can serialize it properly.
     """
     if doc and "_id" in doc:
@@ -76,18 +76,25 @@ def get(customer_id: str) -> dict:
     return _format_customer(doc)
 
 
-def get_by_email(email: str) -> dict:
+# customer_service.py
+
+def get_by_email(email: str) -> dict | None:
+    """Public-facing lookup — safe to expose over HTTP."""
     doc = users.find_one({"email": email, "is_active": True})
     if not doc:
         return None
-    return doc # Return raw doc including password for authentication
+    return _format_customer(doc)
+
+
+def _get_by_email_raw(email: str) -> dict | None:
+    """Internal only — includes password hash, used for auth."""
+    return users.find_one({"email": email, "is_active": True})
 
 
 def authenticate(email: str, password: str) -> dict:
-    user_doc = get_by_email(email)
+    user_doc = _get_by_email_raw(email)
     if not user_doc or not verify_password(password, user_doc["password"]):
         raise AuthenticationError("Invalid email or password")
-    
     return _format_customer(user_doc)
 
 
